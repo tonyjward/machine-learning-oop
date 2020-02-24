@@ -11,13 +11,20 @@ class MyLinearRegression:
         Fit model coefficients
 
         Arguments:
-        X: 1D or 2D numpy array
-        y: 1D numpy array
+        X: 1D or 2D numpy array - X.shape = (m, n)
+        y: 1D numpy array y.shape = (n, 1)
         """
 
-        # check if X is 1D or 2D array
+        # Don't use rank 1 arrays https://stackoverflow.com/questions/18691084/what-does-1-mean-in-numpy-reshape
         if len(X.shape) == 1:
-            X = X.reshape(-1,1)
+            X = X.reshape(-1, 1)
+        y = y.reshape(-1, 1)
+
+        # Dimensions of problem        
+        no_examples = X.shape[0]
+        no_features = X.shape[1] 
+
+        print(f"no_features {no_features} no_examples {no_examples}")      
 
         # add bias if fit_intercept is True
         if self._fit_intercept:
@@ -28,7 +35,7 @@ class MyLinearRegression:
         inverse_xTx = np.linalg.inv(xTx)
         xTy = np.dot(X.T, y)
         coef = np.dot(inverse_xTx, xTy)
-
+   
         # set attributes
         if self._fit_intercept:
             self.intercept_ = coef[0]
@@ -37,12 +44,14 @@ class MyLinearRegression:
             self.intercept_ = coef[0]
             self.coef_ = coef
 
-    def coef(self):
+        assert(self.coef_.shape == ((no_features, 1)))
+
+    def coefficients(self):
         output = f"Intercept: {self.intercept_} Coefficients: {self.coef_}"
         print(output)
         return output
 
     def predict(self, X_new):
 
-        predictions = None
+        predictions = np.dot(X_new, self.coef_)
         return predictions
