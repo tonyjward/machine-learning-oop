@@ -5,6 +5,9 @@ class LinearRegression:
         self.coef = None
         self.intercept = None
 
+    def _add_bias(self, X):
+        return np.c_[np.ones(X.shape[0]), X]
+
     def _ols(self, X, y):
         xTx = np.dot(X.T, X)
         inverse_xTx = np.linalg.inv(xTx)
@@ -31,7 +34,7 @@ class LinearRegression:
 
         # add bias if fit_intercept is True
         if fit_intercept:
-            X = np.c_[np.ones(X.shape[0]), X]
+            X = self._add_bias(X)
 
         # closed form solution
         if optimiser == 'OLS':
@@ -42,7 +45,7 @@ class LinearRegression:
             self.intercept = bhat[0]
             self.coef = bhat[1:]
         else:
-            self.intercept_ = bhat[0]
+            self.intercept = bhat[0]
             self.coef = bhat
 
         assert(self.coef.shape == ((no_features, 1)))
@@ -50,8 +53,7 @@ class LinearRegression:
     def coefficients(self):
         return {'intercept': self.intercept, 'coefficients': self.coef}
 
-
     def predict(self, X_new):
-
-        predictions = np.dot(X_new, self.coef_)
-        return predictions
+        if len(X_new.shape) == 1:
+            X_new = X_new.reshape(-1, 1) 
+        return self.intercept + np.dot(X_new, self.coef)
