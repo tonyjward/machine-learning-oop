@@ -1,9 +1,9 @@
 import numpy as np
 
-class MyLinearRegression:
+class LinearRegression:
     def __init__(self, fit_intercept = True):
-        self.coef_ = None
-        self.intercept_ = None
+        self.coef = None
+        self.intercept = None
         self._fit_intercept = fit_intercept
 
     def fit(self, X, y):
@@ -21,9 +21,7 @@ class MyLinearRegression:
         y = y.reshape(-1, 1)
 
         # Dimensions of problem        
-        no_examples, no_features =  X.shape
-        
-        print(f"no_features {no_features} no_examples {no_examples}")      
+        no_examples, no_features =  X.shape  
 
         # add bias if fit_intercept is True
         if self._fit_intercept:
@@ -33,22 +31,21 @@ class MyLinearRegression:
         xTx = np.dot(X.T, X)
         inverse_xTx = np.linalg.inv(xTx)
         xTy = np.dot(X.T, y)
-        coef = np.dot(inverse_xTx, xTy)
+        bhat = np.dot(inverse_xTx, xTy)
    
         # set attributes
         if self._fit_intercept:
-            self.intercept_ = coef[0]
-            self.coef_ = coef[1:]
+            self.intercept = bhat[0]
+            self.coef = bhat[1:]
         else:
-            self.intercept_ = coef[0]
-            self.coef_ = coef
+            self.intercept_ = bhat[0]
+            self.coef = bhat
 
-        assert(self.coef_.shape == ((no_features, 1)))
+        assert(self.coef.shape == ((no_features, 1)))
 
     def coefficients(self):
-        output = f"Intercept: {self.intercept_} Coefficients: {self.coef_}"
-        print(output)
-        return output
+        return {'intercept': self.intercept, 'coefficients': self.coef}
+
 
     def predict(self, X_new):
 
