@@ -20,8 +20,8 @@ class LinearRegression:
         Fit model coefficients
 
         Arguments:
-        X: 1D or 2D numpy array - X.shape = (m, n)
-        y: 1D numpy array y.shape = (n, 1)
+        X: 1D or 2D numpy array - X.shape = (no_examples, no_features)
+        y: 1D numpy array y.shape = (no_examples, 1)
         """
         
         # Don't use rank 1 arrays 
