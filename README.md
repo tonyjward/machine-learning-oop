@@ -1,6 +1,6 @@
-# Machine Learning Object Orientated Programming
+# Machine Learning Object Oriented Programming
 There are two goals of this project 
-1) To practice object orientated programming in Python
+1) To practice object oriented programming in Python
 2) To improve Machine Learning skills by implementing algorithms from scratch
 
 #### -- Project Status: Under Development
