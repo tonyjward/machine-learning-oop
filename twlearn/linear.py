@@ -1,12 +1,11 @@
 import numpy as np
 
 class LinearRegression:
-    def __init__(self, fit_intercept = True):
+    def __init__(self):
         self.coef = None
         self.intercept = None
-        self._fit_intercept = fit_intercept
 
-    def fit(self, X, y):
+    def fit(self, X, y, fit_intercept = True):
         """
         Fit model coefficients
 
@@ -14,7 +13,7 @@ class LinearRegression:
         X: 1D or 2D numpy array - X.shape = (m, n)
         y: 1D numpy array y.shape = (n, 1)
         """
-
+        
         # Don't use rank 1 arrays 
         if len(X.shape) == 1:
             X = X.reshape(-1, 1) # https://stackoverflow.com/questions/18691084/what-does-1-mean-in-numpy-reshape
@@ -24,7 +23,7 @@ class LinearRegression:
         no_examples, no_features =  X.shape  
 
         # add bias if fit_intercept is True
-        if self._fit_intercept:
+        if fit_intercept:
             X = np.c_[np.ones(X.shape[0]), X]
 
         # closed form solution
@@ -34,7 +33,7 @@ class LinearRegression:
         bhat = np.dot(inverse_xTx, xTy)
    
         # set attributes
-        if self._fit_intercept:
+        if fit_intercept:
             self.intercept = bhat[0]
             self.coef = bhat[1:]
         else:
