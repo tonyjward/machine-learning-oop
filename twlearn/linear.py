@@ -15,15 +15,14 @@ class MyLinearRegression:
         y: 1D numpy array y.shape = (n, 1)
         """
 
-        # Don't use rank 1 arrays https://stackoverflow.com/questions/18691084/what-does-1-mean-in-numpy-reshape
+        # Don't use rank 1 arrays 
         if len(X.shape) == 1:
-            X = X.reshape(-1, 1)
+            X = X.reshape(-1, 1) # https://stackoverflow.com/questions/18691084/what-does-1-mean-in-numpy-reshape
         y = y.reshape(-1, 1)
 
         # Dimensions of problem        
-        no_examples = X.shape[0]
-        no_features = X.shape[1] 
-
+        no_examples, no_features =  X.shape
+        
         print(f"no_features {no_features} no_examples {no_examples}")      
 
         # add bias if fit_intercept is True
