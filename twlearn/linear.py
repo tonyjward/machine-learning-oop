@@ -5,7 +5,14 @@ class LinearRegression:
         self.coef = None
         self.intercept = None
 
-    def fit(self, X, y, fit_intercept = True):
+    def _ols(self, X, y):
+        xTx = np.dot(X.T, X)
+        inverse_xTx = np.linalg.inv(xTx)
+        xTy = np.dot(X.T, y)
+        bhat = np.dot(inverse_xTx, xTy)
+        return bhat
+
+    def fit(self, X, y, fit_intercept = True, optimiser = 'OLS'):
         """
         Fit model coefficients
 
@@ -27,10 +34,8 @@ class LinearRegression:
             X = np.c_[np.ones(X.shape[0]), X]
 
         # closed form solution
-        xTx = np.dot(X.T, X)
-        inverse_xTx = np.linalg.inv(xTx)
-        xTy = np.dot(X.T, y)
-        bhat = np.dot(inverse_xTx, xTy)
+        if optimiser == 'OLS':
+            bhat = self._ols(X, y)
    
         # set attributes
         if fit_intercept:
