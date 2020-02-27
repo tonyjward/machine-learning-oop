@@ -7,12 +7,28 @@ class LinearRegression:
         self._no_features = None
    
     def _add_bias(self, X):
+        """ Add a column of ones to a matrix and return"""
         return np.c_[np.ones(X.shape[0]), X]
 
     def _ols(self, X, y):
+        """ 
+        Implement ordinary least square using linear algebra
+
+        Arguments:
+        X --
+        y --
+
+        Returns:
+        bhat --
+
+        Approach:
+        We add the bias term to the X matrix before optimisation
+        This is not needed for the other optimisation methods so we do this inside the _ols function
+        """
         # add bias 
         X = self._add_bias(X)
 
+        # optimise coefficients
         xTx = np.dot(X.T, X)
         inverse_xTx = np.linalg.inv(xTx)
         xTy = np.dot(X.T, y)
@@ -35,7 +51,6 @@ class LinearRegression:
         db -- gradient of the loss with respect to b, thus same shape as b
         """
         # TODO: check dimensions
-        n_features, n_examples = X.shape
 
         # FORWARD PROPOGATION (FROM X TO COST)
         # Cost function is (1/m)sum((y - a)^2)
@@ -67,9 +82,9 @@ class LinearRegression:
         learning_rate -- learing rate of the gradient descent update rule
 
         Returns:
-        params --
-        grads --
-        costs --
+        w -- weights, a numpy array of size (n_features, 1)
+        b -- bias, a scalar
+        costs -- a vector of costs for every 100th iteration of gradient descent 
 
         Approach:
             1) Calculate the cost and the gradient for the current paramters (using propagate)
@@ -86,6 +101,7 @@ class LinearRegression:
             if i % 100 == 0:
                 costs.append(cost)
 
+            # gradient descent update
             w = w - learning_rate * grads['dw']
             b = b - learning_rate * grads['db']
          
