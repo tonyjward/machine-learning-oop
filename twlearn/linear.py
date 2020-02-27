@@ -35,9 +35,14 @@ class LinearRegression:
         inverse_xTx = np.linalg.inv(xTx)
         xTy = np.dot(X.T, y)
         bhat = np.dot(inverse_xTx, xTy)
-        return bhat
 
-    def propagate(self, w, b, X, y):
+        # pull out weights and bias
+        b = bhat[0]
+        w = bhat[1:]
+
+        return w, b
+
+    def _propagate(self, w, b, X, y):
         """
         Implement the cost function and its gradient
 
@@ -72,7 +77,7 @@ class LinearRegression:
 
         return grads, cost
 
-    def optimise(self, w, b, X, y, num_iterations, learning_rate, print_cost = False):
+    def _optimise(self, w, b, X, y, num_iterations, learning_rate, print_cost = False):
         """
         This function optimises w and b by running a gradient descent algorithm
 
@@ -90,7 +95,7 @@ class LinearRegression:
         costs -- a vector of costs for every 100th iteration of gradient descent 
 
         Approach:
-            1) Calculate the cost and the gradient for the current paramters (using propagate)
+            1) Calculate the cost and the gradient for the current paramters (using _propagate)
             2) Update the paramters using gradient descent rule for w and b
         """
 
@@ -98,7 +103,7 @@ class LinearRegression:
 
         for i in range(num_iterations):
             # cost and gradient calculation
-            grads, cost = self.propagate(w, b, X, y)
+            grads, cost = self._propagate(w, b, X, y)
 
             # store costs
             if i % 100 == 0:
@@ -123,19 +128,15 @@ class LinearRegression:
         Returns
         return bhat 
         """
-  
         # initialise weights
-        w, b = self.initialise_with_zeros(self._no_features)
+        w, b = self._initialise_with_zeros(self._no_features)
 
         # optimise weights
-        w, b, costs = self.optimise(w, b, X, y, num_iterations, learning_rate, print_cost)
+        w, b, costs = self._optimise(w, b, X, y, num_iterations, learning_rate, print_cost)
 
-        bhat = np.append(b, w)
-        bhat = bhat.reshape(-1, 1)
- 
-        return bhat
+        return w, b
 
-    def initialise_with_zeros(self, dim):
+    def _initialise_with_zeros(self, dim):
         """
         This function creates a vector of zeros of shape(dim, 1) for w and initialises b to 0
 
@@ -171,18 +172,16 @@ class LinearRegression:
         
         # train model
         if optimiser == 'OLS': # closed form solution
-            bhat = self._ols(X, y)
+            w, b = self._ols(X, y)
         
         elif optimiser == 'GD': # gradient descent
-            bhat = self._gd(X.T, y.T, num_iterations = 2000, learning_rate = 0.5, print_cost = False)
+            w, b = self._gd(X.T, y.T, num_iterations = 2000, learning_rate = 0.5, print_cost = False)
             
-        assert(bhat.shape == (self._no_features + 1, 1))
+        assert(w.shape == (self._no_features, 1))
         
         # set attributes
-        self.intercept = bhat[0]
-        self.coef = bhat[1:]
-
-        assert(self.coef.shape == ((self._no_features, 1)))
+        self.intercept = b
+        self.coef = w
 
     def coefficients(self):
         return {'intercept': self.intercept, 'coefficients': self.coef}
