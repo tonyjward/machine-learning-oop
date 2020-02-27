@@ -69,9 +69,7 @@ class LinearRegression:
         # BACKWARD PROPOGATION (To find gradients)
         dw = (1 / no_examples) * np.dot(X, (A - y).T)
         db = (1 / no_examples) * np.sum(A - y)
-
-        # CHECKS
-        assert(dw.shape == w.shape)
+        assert(dw.shape == w.shape)     
     
         grads = {'dw':dw, 'db':db}
 
@@ -175,8 +173,8 @@ class LinearRegression:
             w, b = self._ols(X, y)
         
         elif optimiser == 'GD': # gradient descent
-            w, b = self._gd(X.T, y.T, num_iterations = 2000, learning_rate = 0.5, print_cost = False)
-            
+            w, b = self._gd(X.T, y.T, num_iterations = 2000, learning_rate = 0.5, print_cost = False)  
+        
         assert(w.shape == (self._no_features, 1))
         
         # set attributes
