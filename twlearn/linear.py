@@ -15,15 +15,17 @@ class LinearRegression:
         Implement ordinary least square using linear algebra
 
         Arguments:
-        X --
-        y --
+        X -- data of size (no_examples, no_features)
+        y -- response vector of size (1, no_examples)
 
         Returns:
-        bhat --
+        bhat -- model coefficients
 
         Approach:
         We add the bias term to the X matrix before optimisation
         This is not needed for the other optimisation methods so we do this inside the _ols function
+        Note that the shape of X is (no_examples, no_features) where as for gradient descent
+        it is currently (no_features, no_examples)
         """
         # add bias 
         X = self._add_bias(X)
@@ -51,16 +53,17 @@ class LinearRegression:
         db -- gradient of the loss with respect to b, thus same shape as b
         """
         # TODO: check dimensions
+        no_features, no_examples = X.shape
 
         # FORWARD PROPOGATION (FROM X TO COST)
         # Cost function is (1/m)sum((y - a)^2)
 
         A = b + np.dot(w.T, X)
-        cost = (1 / n_examples) * np.sum(np.square(A - y))
+        cost = (1 / no_examples) * np.sum(np.square(A - y))
 
         # BACKWARD PROPOGATION (To find gradients)
-        dw = (1 / n_examples) * np.dot(X, (A - y).T)
-        db = (1 / n_examples) * np.sum(A - y)
+        dw = (1 / no_examples) * np.dot(X, (A - y).T)
+        db = (1 / no_examples) * np.sum(A - y)
 
         # CHECKS
         assert(dw.shape == w.shape)
@@ -74,15 +77,15 @@ class LinearRegression:
         This function optimises w and b by running a gradient descent algorithm
 
         Arguments:
-        w -- weights, a numpy array of size (n_features, 1)
+        w -- weights, a numpy array of size (no_features, 1)
         b -- bias, a scalar
-        X -- training data, numpy array of size (n_features, n_examples)
-        y -- response vector of size (1, n_examples)
+        X -- training data, numpy array of size (no_features, no_examples)
+        y -- response vector of size (1, no_examples)
         num_iterations -- number of iterations of the optimisation loop
         learning_rate -- learing rate of the gradient descent update rule
 
         Returns:
-        w -- weights, a numpy array of size (n_features, 1)
+        w -- weights, a numpy array of size (no_features, 1)
         b -- bias, a scalar
         costs -- a vector of costs for every 100th iteration of gradient descent 
 
@@ -105,36 +108,14 @@ class LinearRegression:
             w = w - learning_rate * grads['dw']
             b = b - learning_rate * grads['db']
          
-        return w, b, costs
-    
-    def _predict(self, w, b, X):
-        """ Predict response using learned linear regression paramters, (w, b)
-
-        Arguments:
-        w -- weights, a numpy array of size (n_features, 1)
-        b -- bias, a scalar
-        X -- data, a numpy array of size (n_features, n_examples)
-
-        Returns:
-        y_prediction -- a numpy array of size (1, n_examples)
-        """
-        # check dimensions of X
-        n_features, n_examples = X.shape
-
-        # make prediction
-        y_prediction = b + np.dot(w.T, X)
-
-        # check dimensions of prediction
-        assert(y_prediction.shape == (1, n_examples))
-
-        return y_prediction      
+        return w, b, costs   
 
     def _gd(self, X, y, num_iterations, learning_rate, print_cost):
         """ Build the linear regression model by calling the helper functions
 
         Arguments:
-        X -- training data, numpy array of size (n_features + 1, n_examples)
-        Y -- response vector of size (1, n_examples)
+        X -- training data, numpy array of size (no_features + 1, no_examples)
+        Y -- response vector of size (1, no_examples)
         num_iterations -- number of gradient descent iterations
         learning_rate -- learning rate for gradient descent update rule
         print_cost -- logical, should we print the cost function every 100 iterations
@@ -151,9 +132,7 @@ class LinearRegression:
 
         bhat = np.append(b, w)
         bhat = bhat.reshape(-1, 1)
-        print(f"dimension of w is {w.shape}")
-        print(f"dimension of bhat are {bhat.shape}")
-
+ 
         return bhat
 
     def initialise_with_zeros(self, dim):
@@ -203,8 +182,6 @@ class LinearRegression:
         self.intercept = bhat[0]
         self.coef = bhat[1:]
 
-        print(f"self.coef.shape: {self.coef.shape}")
-        print(f"no features: {self._no_features}")
         assert(self.coef.shape == ((self._no_features, 1)))
 
     def coefficients(self):
