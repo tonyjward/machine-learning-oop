@@ -1,12 +1,12 @@
 import numpy as np
 from math import floor
+from .GeneralisedLinearModel import Glm
 
-class LinearRegression:
+class LinearRegression(Glm):
+
     def __init__(self):
-        self.coef = None
-        self.intercept = None
-        self._no_features = None
-   
+        Glm.__init__(self)
+    
     def _add_bias(self, X):
         """ Add a column of ones to a matrix and return"""
         return np.c_[np.ones(X.shape[0]), X]
