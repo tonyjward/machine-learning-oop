@@ -4,7 +4,7 @@ import numpy as np
 from twlearn import LinearRegression, generate_dataset
 from twlearn.metrics import Rmse, Mae
 
-class TestLinearRegressionClass1D(unittest.TestCase):
+class TestLinearRegressionOLS_1D_Class(unittest.TestCase):
     
     def setUp(self):
         X, y = np.array([[-1.], [0.], [1.]]), np.array([[0.],[1.],[2.]])
@@ -23,7 +23,7 @@ class TestLinearRegressionClass1D(unittest.TestCase):
         yhat = self.lm.predict(X_new)
         self.assertIsNone(np.testing.assert_allclose(desired_yhat, yhat))
 
-class TestLinearRegressionClass2D(unittest.TestCase):
+class TestLinearRegressionOLS_2D_MSE_Class(unittest.TestCase):
     
     def setUp(self):
         X, y =  np.array([[1.,0],[0.,1.],[0.,0.]]), np.array([[0.],[1.],[2.]])
@@ -42,12 +42,12 @@ class TestLinearRegressionClass2D(unittest.TestCase):
         yhat = self.lm.predict(X_new)
         self.assertIsNone(np.testing.assert_allclose(desired_yhat, yhat))
 
-class TestLinearRegressionClass2DGradientDescent(unittest.TestCase):
+class TestLinearRegressionGradientDescent_MSE_2D_Class(unittest.TestCase):
     
     def setUp(self):
         X, y =  np.array([[1.,0],[0.,1.],[0.,0.]]), np.array([[0.],[1.],[2.]])
         self.lm = LinearRegression()
-        self.lm.fit(X, y, optimiser = 'GD')
+        self.lm.fit(X, y, optimiser = 'GD', loss = 'MSE', debug = False)
 
     def test_fit_2D_with_intercept(self):
         desired_intercept, desired_coefficients = np.array([2.]), np.array([[-2.], [-1.]])    
@@ -60,6 +60,25 @@ class TestLinearRegressionClass2DGradientDescent(unittest.TestCase):
         desired_yhat = np.array([[3.],[-3.0],[0.5]])
         yhat = self.lm.predict(X_new)
         self.assertIsNone(np.testing.assert_allclose(desired_yhat, yhat))
+
+# class TestLinearRegressionGradientDescent_MAE_1D_Class(unittest.TestCase):
+    
+#     def setUp(self):
+#         X, y = np.array([[-1.], [0.], [1.]]), np.array([[0.],[1.],[2.]])
+#         self.lm = LinearRegression()
+#         self.lm.fit(X, y, optimiser = 'GD', loss = 'MAE', learning_rate = 0.001, num_iterations = 1000, debug = True)
+
+#     def test_fit_1D_with_intercept(self):
+#         desired_intercept, desired_coefficients = np.array([1.]), np.array([[1.]])    
+#         coefficients = self.lm.coefficients()
+#         self.assertIsNone(np.testing.assert_allclose(desired_intercept, coefficients['intercept']))
+#         self.assertIsNone(np.testing.assert_allclose(desired_coefficients, coefficients['coefficients']))
+
+#     def test_predict_1D_with_intercept(self):
+#         X_new = np.array([[-0.5], [2.0], [1.5]])
+#         desired_yhat = np.array([[0.5],[3.],[2.5]])
+#         yhat = self.lm.predict(X_new)
+#         self.assertIsNone(np.testing.assert_allclose(desired_yhat, yhat))
 
 if __name__ == '__main__':
     unittest.main()
