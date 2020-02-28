@@ -1,4 +1,5 @@
 import numpy as np
+from math import floor
 
 class LinearRegression:
     def __init__(self):
@@ -90,7 +91,7 @@ class LinearRegression:
 
         return grads, cost
 
-    def _optimise(self, w, b, X, y, num_iterations, learning_rate, loss, print_history):
+    def _optimise(self, w, b, X, y, num_iterations, learning_rate, loss, debug):
         """
         This function optimises w and b by running a gradient descent algorithm
 
@@ -111,36 +112,32 @@ class LinearRegression:
             1) Calculate the cost and the gradient for the current paramters (using _propagate)
             2) Update the paramters using gradient descent rule for w and b
         """
+        # debug matrix with columns (iteration, costs, w, b)
 
-        costs = []
-        w_hist = []
-        b_hist = []
+        SAVE_EVERY = 100
+        debug_rows = floor(num_iterations / SAVE_EVERY)
+        debug_cols = 3 + w.shape[0]
+        debug_mat = np.zeros((debug_rows, debug_cols))
 
         for i in range(num_iterations):
             # cost and gradient calculation
             grads, cost = self._propagate(w, b, X, y, loss)
 
             # store costs
-            if i % 100 == 0:
-                costs.append(round(cost,5))
-                if print_history:
-                    w_hist.append(w)
-                    b_hist.append(b)
+            if i % SAVE_EVERY == 0:
+                row = int(i / SAVE_EVERY)
+                debug_mat[row, 0] = i
+                debug_mat[row, 1] = cost
+                debug_mat[row, 2:(2+w.shape[0])] = np.round(w.flatten(), 3)
+                debug_mat[row, 2 + w.shape[0]] = np.round(b, 3)
 
             # gradient descent update
             w = w - learning_rate * grads['dw']
             b = b - learning_rate * grads['db']
          
-        if print_history:
-            print("W HISTORY")
-            print("---------")
-            print(w_hist)
-            print("B HISTORY")
-            print("----------")
-            print(b_hist) 
-        return w, b, costs   
+        return w, b, debug_mat   
 
-    def _gd(self, X, y, num_iterations, learning_rate, loss, print_history):
+    def _gd(self, X, y, num_iterations, learning_rate, loss, debug):
         """ Build the linear regression model by calling the helper functions
 
         Arguments:
@@ -159,9 +156,9 @@ class LinearRegression:
         w, b = self._initialise_with_zeros(self._no_features)
 
         # optimise weights
-        w, b, costs = self._optimise(w, b, X, y, num_iterations, learning_rate, loss, print_history)
+        w, b, debug_mat = self._optimise(w, b, X, y, num_iterations, learning_rate, loss, debug)
 
-        return w, b, costs
+        return w, b, debug_mat
 
     def _initialise_with_zeros(self, dim):
         """
@@ -178,7 +175,7 @@ class LinearRegression:
         b = 100
         return w, b
 
-    def fit(self, X, y, optimiser = 'OLS', loss = 'MSE', num_iterations = 2000, learning_rate = 0.5, print_costs = False, print_history = False):
+    def fit(self, X, y, optimiser = 'OLS', loss = 'MSE', num_iterations = 2000, learning_rate = 0.5, debug = False):
         """
         Fit model coefficients
 
@@ -202,7 +199,7 @@ class LinearRegression:
             w, b = self._ols(X, y)
         
         elif optimiser == 'GD': # gradient descent
-            w, b, costs = self._gd(X.T, y.T, num_iterations = num_iterations, learning_rate = learning_rate, loss = loss, print_history = print_history)
+            w, b, debug_mat = self._gd(X.T, y.T, num_iterations = num_iterations, learning_rate = learning_rate, loss = loss, debug = debug)
 
         assert(w.shape == (self._no_features, 1))
         
@@ -210,8 +207,10 @@ class LinearRegression:
         self.intercept = b
         self.coef = w
 
-        if print_costs:
-            print(costs)
+        if debug:
+            print("iteration: cost: w: b:")
+            print("----------------------")
+            print(debug_mat)
 
     def coefficients(self):
         return {'intercept': self.intercept, 'coefficients': self.coef}
