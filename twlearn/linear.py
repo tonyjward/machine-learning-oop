@@ -42,7 +42,7 @@ class LinearRegression:
 
         return w, b
 
-    def _propagate(self, w, b, X, y):
+    def _propagate(self, w, b, X, y, loss):
         """
         Implement the cost function and its gradient
 
@@ -60,22 +60,37 @@ class LinearRegression:
         # TODO: check dimensions
         no_features, no_examples = X.shape
 
-        # FORWARD PROPOGATION (FROM X TO COST)
-        # Cost function is (1/m)sum((y - a)^2)
-
         A = b + np.dot(w.T, X)
-        cost = (1 / no_examples) * np.sum(np.square(A - y))
 
-        # BACKWARD PROPOGATION (To find gradients)
-        dw = (1 / no_examples) * np.dot(X, (A - y).T)
-        db = (1 / no_examples) * np.sum(A - y)
+        if loss == 'MSE':
+            # FORWARD PROPOGATION (FROM X TO COST)
+            # Cost function is (1/m)sum((y - a)^2)
+            cost = (1 / no_examples) * np.sum(np.square(A - y))
+
+            # BACKWARD PROPOGATION (To find gradients)
+            dw = (1 / no_examples) * np.dot(X, (A - y).T)
+            db = (1 / no_examples) * np.sum(A - y)
+        elif loss == 'MAE':
+            # FORWARD PROPOGATION (FROM X TO COST)
+            # Cost function is (1/m)sum(|y - a|)
+            cost = (1 / no_examples) * np.sum(np.absolute(y - A))
+
+            # BACKWARD PROPOGATION (To find gradients)
+            part1 = np.sum(X[:, ((y - A) < 0).flatten()], axis = 1)
+            part2 = np.sum(X[:, ((y - A) > 0).flatten()], axis = 1)
+                      
+            dw = (1 / no_examples) * (part1 - part2)
+            dw = dw.reshape(-1, 1)
+            db = (1 / no_examples) * (np.sum((y - A) > 0) - np.sum((y - A) < 0)) 
+        
+        
         assert(dw.shape == w.shape)     
     
         grads = {'dw':dw, 'db':db}
 
         return grads, cost
 
-    def _optimise(self, w, b, X, y, num_iterations, learning_rate, print_cost = False):
+    def _optimise(self, w, b, X, y, num_iterations, learning_rate, loss, print_history):
         """
         This function optimises w and b by running a gradient descent algorithm
 
@@ -98,22 +113,34 @@ class LinearRegression:
         """
 
         costs = []
+        w_hist = []
+        b_hist = []
 
         for i in range(num_iterations):
             # cost and gradient calculation
-            grads, cost = self._propagate(w, b, X, y)
+            grads, cost = self._propagate(w, b, X, y, loss)
 
             # store costs
             if i % 100 == 0:
-                costs.append(cost)
+                costs.append(round(cost,5))
+                if print_history:
+                    w_hist.append(w)
+                    b_hist.append(b)
 
             # gradient descent update
             w = w - learning_rate * grads['dw']
             b = b - learning_rate * grads['db']
          
+        if print_history:
+            print("W HISTORY")
+            print("---------")
+            print(w_hist)
+            print("B HISTORY")
+            print("----------")
+            print(b_hist) 
         return w, b, costs   
 
-    def _gd(self, X, y, num_iterations, learning_rate, print_cost):
+    def _gd(self, X, y, num_iterations, learning_rate, loss, print_history):
         """ Build the linear regression model by calling the helper functions
 
         Arguments:
@@ -124,15 +151,17 @@ class LinearRegression:
         print_cost -- logical, should we print the cost function every 100 iterations
 
         Returns
-        return bhat 
+        w -- weights
+        b -- bias 
         """
+
         # initialise weights
         w, b = self._initialise_with_zeros(self._no_features)
 
         # optimise weights
-        w, b, costs = self._optimise(w, b, X, y, num_iterations, learning_rate, print_cost)
+        w, b, costs = self._optimise(w, b, X, y, num_iterations, learning_rate, loss, print_history)
 
-        return w, b
+        return w, b, costs
 
     def _initialise_with_zeros(self, dim):
         """
@@ -145,11 +174,11 @@ class LinearRegression:
         w -- initialised vector of shape (dim, 1)
         b -- initialised scalar
         """
-        w = np.ones((dim,1))
-        b = 0
+        w = np.ones((dim,1)) * 100
+        b = 100
         return w, b
 
-    def fit(self, X, y, optimiser = 'OLS'):
+    def fit(self, X, y, optimiser = 'OLS', loss = 'MSE', num_iterations = 2000, learning_rate = 0.5, print_costs = False, print_history = False):
         """
         Fit model coefficients
 
@@ -173,13 +202,16 @@ class LinearRegression:
             w, b = self._ols(X, y)
         
         elif optimiser == 'GD': # gradient descent
-            w, b = self._gd(X.T, y.T, num_iterations = 2000, learning_rate = 0.5, print_cost = False)  
-        
+            w, b, costs = self._gd(X.T, y.T, num_iterations = num_iterations, learning_rate = learning_rate, loss = loss, print_history = print_history)
+
         assert(w.shape == (self._no_features, 1))
         
         # set attributes
         self.intercept = b
         self.coef = w
+
+        if print_costs:
+            print(costs)
 
     def coefficients(self):
         return {'intercept': self.intercept, 'coefficients': self.coef}
