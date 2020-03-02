@@ -2,8 +2,9 @@ import numpy as np
 from math import floor
 from .GeneralisedLinearModel import Glm
 from .GradientDescent import GradDesc
+from .ParticleSwarm import Pso
 
-class LinearRegression(Glm, GradDesc):
+class LinearRegression(Glm, GradDesc, Pso):
 
     def __init__(self):
         Glm.__init__(self)
