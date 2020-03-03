@@ -71,7 +71,7 @@ class LinearRegression(Glm, GradDesc, Pso):
             w, b, debug_mat = self._gd(X.T, y.T, num_iterations = num_iterations, 
                                     learning_rate = learning_rate, loss = loss, debug = debug)
         elif optimiser == 'PSO': # particle swarm
-            w, b = self._pso(X, y, no_particles = 100, inertia = 0.9, nostalgia = 1, 
+            w, b = self._pso(X, y, no_particles = 300, inertia = 0.9, nostalgia = 1, 
                                   envy = 1, upper = 4, lower = -4)
 
         assert(w.shape == (self._no_features, 1))
