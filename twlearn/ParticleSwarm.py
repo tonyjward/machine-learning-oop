@@ -71,20 +71,6 @@ class Pso:
         
         return np.dot(X, particles)
 
-    def _mae_pso(self, predictions, actual):
-        """
-        Calculate Mean Absolute Error
-
-        Arguments:
-            predictions: predictions numpy array of size (no_examples, no_particles)
-            actuals: 1D numpy array of size (no_examples, 1)
-
-        Returns:
-            mae: mae for each particle - numpy array of size (1, no_particles)
-        """
-        assert(predictions.shape[0] == actual.shape[0])
-        absolute_errors = np.abs(predictions - actual)
-        return np.mean(absolute_errors, axis = 0, keepdims = True)
 
     def _update_historical_best(self, swarm_position, swarm_errors, 
                                  historical_best, historical_best_errors):
@@ -145,12 +131,11 @@ class Pso:
         best_particle = historical_best[:, best_particle_index]
         return best_particle, best_particle_error
 
-    def _pso(self, X, y, num_iterations, no_particles, inertia, nostalgia, envy, upper, lower):
+    def _pso(self, X, y, num_iterations, no_particles, inertia, nostalgia, envy, upper, lower, loss):
         """ Perform particle swarm optimisaion
 
         Arguments:
-            X -- data matrix of size (no_examples, no_features)
-            y -- response vector of size (no_examples, 1)
+ 
 
         Returns:
             w -- weights - a numpy vector of size (no_features, 1)
@@ -172,7 +157,7 @@ class Pso:
         swarm_predictions = self._predict_pso(X, swarm_position)
         assert(swarm_predictions.shape == (no_examples, no_particles))
 
-        swarm_errors = self._mae_pso(swarm_predictions, y)
+        swarm_errors = loss(swarm_predictions, y)
         assert(swarm_errors.shape == (1, no_particles))        
         
         # Intialise best historical position and errors
@@ -211,7 +196,7 @@ class Pso:
             swarm_predictions = self._predict_pso(X, swarm_position)
             assert(swarm_predictions.shape == (no_examples, no_particles))
 
-            swarm_errors = self._mae_pso(swarm_predictions, y)
+            swarm_errors = loss(swarm_predictions, y)
             assert(swarm_errors.shape == (1, no_particles))   
 
             # Update historical best and historical error for each particle if new position better   
