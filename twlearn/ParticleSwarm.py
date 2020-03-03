@@ -145,7 +145,7 @@ class Pso:
         best_particle = historical_best[:, best_particle_index]
         return best_particle, best_particle_error
 
-    def _pso(self, X, y, no_particles, inertia, nostalgia, envy, upper, lower):
+    def _pso(self, X, y, num_iterations, no_particles, inertia, nostalgia, envy, upper, lower):
         """ Perform particle swarm optimisaion
 
         Arguments:
@@ -191,7 +191,7 @@ class Pso:
         assert(velocity.shape == (no_features_incl_bias, no_particles))
 
         #--------WHILE A TERMINATION CRITERIAN IS NOT MET
-        for i in range(2000):
+        for i in range(num_iterations):
 
             #Update Velocity
             velocity = self._update_velocity(velocity = velocity, 
