@@ -2,8 +2,9 @@ import numpy as np
 from math import floor
 from .GeneralisedLinearModel import Glm
 from .GradientDescent import GradDesc
+from .ParticleSwarm import Pso
 
-class LinearRegression(Glm, GradDesc):
+class LinearRegression(Glm, GradDesc, Pso):
 
     def __init__(self):
         Glm.__init__(self)
@@ -44,7 +45,8 @@ class LinearRegression(Glm, GradDesc):
 
         return w, b
 
-    def fit(self, X, y, optimiser = 'OLS', loss = 'MSE', num_iterations = 2000, learning_rate = 0.5, debug = False):
+    def fit(self, X, y, optimiser = 'OLS', loss = 'MSE', num_iterations = 2000, learning_rate = 0.5, debug = False, no_particles = 300,
+            upper = 4, lower = -4):
         """
         Fit model coefficients
 
@@ -61,14 +63,17 @@ class LinearRegression(Glm, GradDesc):
         y = y.reshape(-1, 1)
 
         # Dimensions of problem        
-        no_examples, self._no_features =  X.shape 
+        self._no_examples, self._no_features =  X.shape 
         
         # train model
         if optimiser == 'OLS': # closed form solution
             w, b = self._ols(X, y)
-        
         elif optimiser == 'GD': # gradient descent
-            w, b, debug_mat = self._gd(X.T, y.T, num_iterations = num_iterations, learning_rate = learning_rate, loss = loss, debug = debug)
+            w, b, debug_mat = self._gd(X.T, y.T, num_iterations = num_iterations, 
+                                    learning_rate = learning_rate, loss = loss, debug = debug)
+        elif optimiser == 'PSO': # particle swarm
+            w, b = self._pso(X, y, num_iterations = num_iterations, no_particles = no_particles, inertia = 0.9, nostalgia = 1, 
+                                  envy = 1, upper = upper, lower = lower)
 
         assert(w.shape == (self._no_features, 1))
         

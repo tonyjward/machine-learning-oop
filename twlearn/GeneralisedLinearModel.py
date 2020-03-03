@@ -5,6 +5,7 @@ class Glm:
         self.coef = None
         self.intercept = None
         self._no_features = None
+        self._no_examples = None
 
     def _initialise_with_zeros(self, dim):
         """

@@ -6,13 +6,14 @@ from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 
 
-def generate_dataset(n_train, n_test, n_features, noise=0.1, verbose=False):
+
+def generate_dataset(n_train, n_test, n_features, tail_strength = 0.5, noise=0.1, verbose=False):
     """Generate a regression dataset with the given parameters."""
     if verbose:
         print("generating dataset...")
 
     X, y, coef = make_regression(n_samples=n_train + n_test,
-                                 n_features=n_features, noise=noise, coef=True)
+                                 n_features=n_features,  tail_strength = tail_strength, noise=noise, coef=True)
 
     random_seed = 13
     X_train, X_test, y_train, y_test = train_test_split(
@@ -30,4 +31,4 @@ def generate_dataset(n_train, n_test, n_features, noise=0.1, verbose=False):
     gc.collect()
     if verbose:
         print("ok")
-    return X_train, y_train, X_test, y_test
+    return X_train, y_train, X_test, y_test, coef
