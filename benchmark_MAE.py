@@ -8,6 +8,8 @@ if __name__ == '__main__':
     
     pso_wins_RMSE = 0
     pso_wins_MAE = 0
+ 
+
     for i in range(TRIALS):
         print(i)
         
@@ -20,7 +22,6 @@ if __name__ == '__main__':
         predictions_OLS = model_OLS.predict(X_test)
         RMSE_OLS = Rmse(predictions_OLS, y_test)
         MAE_OLS = Mae(predictions_OLS, y_test)
-        # print(f"RMSE from OLS model: {RMSE_OLS}")
         print(f"MAE from OLS model: {MAE_OLS}")
 
         # PSO - mae
@@ -30,7 +31,6 @@ if __name__ == '__main__':
         predictions_PSO = model_PSO.predict(X_test)
         RMSE_PSO = Rmse(predictions_PSO, y_test)
         MAE_PSO = Mae(predictions_PSO, y_test)
-        # print(f"RMSE from PSO model: {RMSE_PSO}")
         print(f"MAE from PSO model: {MAE_PSO}")
 
         if RMSE_PSO < RMSE_OLS:

@@ -28,6 +28,9 @@ def generate_dataset(n_train, n_test, n_features, tail_strength = 0.5, noise=0.1
     y_train = y_scaler.fit_transform(y_train[:, None])[:, 0]
     y_test = y_scaler.transform(y_test[:, None])[:, 0]
 
+    y_train = y_train.reshape(-1,1)
+    y_test = y_test.reshape(-1,1)
+
     gc.collect()
     if verbose:
         print("ok")
