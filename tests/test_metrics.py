@@ -20,7 +20,7 @@ class Test_Five_By_Two_Cv(unittest.TestCase):
         t_statistic, average_differences = five_by_two_cv(self.errorA, self.errorB)
         self.assertIsNone(np.testing.assert_allclose(t_statistic, -0.830454799))
 
-class Test_Rmse(unittest.TestCase):
+class Test_1_solution(unittest.TestCase):
     def setUp(self):
         self.predictions = np.array([1, 2, 3])
         self.actuals = np.array([0.9, 2.2, 2.7])
@@ -28,6 +28,23 @@ class Test_Rmse(unittest.TestCase):
     def test_Rmse(self):
         rmse = Rmse(self.predictions, self.actuals)
         self.assertIsNone(np.testing.assert_allclose(rmse, 0.374165739))
+
+    def test_Mae(self):
+        mae = Mae(self.predictions, self.actuals)
+        self.assertIsNone(np.testing.assert_allclose(mae, 0.2))
+
+class Test_2_solutions(unittest.TestCase):
+    def setUp(self):
+        self.predictions = np.array([[1,1], [2, 2], [3, 3]])
+        self.actuals = np.array([0.9, 2.2, 2.7])
+
+    def test_Rmse(self):
+        rmse = Rmse(self.predictions, self.actuals)
+        self.assertIsNone(np.testing.assert_allclose(rmse, np.array([[0.374165739, 0.374165739]])))
+
+    def test_Mae(self):
+        mae = Mae(self.predictions, self.actuals)
+        self.assertIsNone(np.testing.assert_allclose(mae, np.array([[0.2, 0.2]])))
 
 if __name__ == '__main__':
     unittest.main()
