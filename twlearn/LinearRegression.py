@@ -46,7 +46,7 @@ class LinearRegression(Glm, GradDesc, Pso):
         return w, b
 
     def fit(self, X, y, optimiser = 'OLS', loss = 'MSE', num_iterations = 2000, learning_rate = 0.5, debug = False, no_particles = 300,
-            upper = 4, lower = -4):
+            upper = 4, lower = -4, **kwargs):
         """
         Fit model coefficients
 

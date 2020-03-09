@@ -62,7 +62,7 @@ def Mae(predictions, actual):
 
     return np.mean(absolute_errors, axis = 0, keepdims = True)
 
-def Cautious(predictions, actual, multiplier = 10):
+def Cautious(predictions, actual, multiplier = 100):
     """
     Calculate Mean Absolute Error
 

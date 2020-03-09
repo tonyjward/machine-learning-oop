@@ -7,8 +7,6 @@ import sklearn.model_selection
 NO_FOLDS = 2
 NO_REPEATS = 5
 
-np.random.seed(1)
-
 def evaluate(model, X_test, Y_test, loss):
     """ Take a model and and some test data and produce test metrics
     Arguments:
@@ -22,8 +20,14 @@ def evaluate(model, X_test, Y_test, loss):
     predictions = model.predict(X_test)
     return loss(predictions, Y_test)
 
-if __name__ == '__main__':
-    
+def cross_validate(no_repeats, no_folds, loss, kwargs):
+    """
+    Approach:
+        We want the random numbers for repeat 1 to be different for repeat 2, etc
+        however we also want the random numbers for repeat 1, to be the same
+        each time we run the cross_validation to ensure we can compare algorithm
+        performance. We therefore set the seed to be the repeat number.
+    """  
     boston = load_boston()
 
     X = np.array(boston.data)
@@ -31,61 +35,57 @@ if __name__ == '__main__':
 
     no_examples, no_features = X.shape
 
-    OLS_MAE = {}
-    PSO_MAE = {}
+    cv_results = {}
 
     for repeat in range(NO_REPEATS):
         print(f"repeat: {repeat}")
+        
+        np.random.seed(repeat)
         folds = np.random.randint(low = 0, high = NO_FOLDS , size = no_examples)
-        OLS_MAE[repeat] = {}
-        PSO_MAE[repeat] = {}
-
+        
+        cv_results[repeat] = {}
+  
         for fold in range(NO_FOLDS):
             print(f"fold: {fold}")
 
             X_train = X[folds != fold,:]
             X_test  = X[folds == fold,:]
             Y_train = Y[folds != fold]
-            Y_test  = Y[folds == fold]
+            Y_test  = Y[folds == fold]           
 
-            # instantiate model objects
-            ols_model = LinearRegression()
-            pso_model = LinearRegression()
+            # train model
+            model = LinearRegression()
+            model.fit(X_train, Y_train, **kwargs)
 
-            # train models
-            ols_model.fit(X_train, Y_train, optimiser = 'OLS')
-            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Mae, num_iterations = 2000, no_particles = 500)
+            # evaluate model
+            cv_results[repeat][fold] = evaluate(model, X_test, Y_test, loss)
 
-            # evaluate models
-            OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Mae)
-            PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Mae)
+    return cv_results
 
-    print(f" t_statistic {five_by_two_cv(OLS_MAE, PSO_MAE)}")
+if __name__ == '__main__':
+    
+    CUSTOM_LOSS = Cautious
+
+    print("Training OLS Model")
+    ols_results = cross_validate(no_repeats = NO_REPEATS, no_folds = NO_FOLDS, loss = CUSTOM_LOSS, 
+                                 kwargs = {"optimiser":"OLS"})
+    
+    print("OLS Results")
+    print(ols_results)
+
+    print("Training PSO Model")
+    pso_results = cross_validate(no_repeats = NO_REPEATS, no_folds = NO_FOLDS, loss = CUSTOM_LOSS,
+                                 kwargs = {"optimiser":'PSO', "loss":CUSTOM_LOSS, "num_iterations":5000, "no_particles":500})
+
+    print("PSO Results")
+    print(pso_results)
+
+    print(f" t_statistic {five_by_two_cv(ols_results, pso_results)}")
+
+   
     
     
-    
-    
-    
-    
-    # MAE_diff = OLS_MAE - PSO_MAE
-    # RMSE_diff = OLS_RMSE- PSO_RMSE
-
-    # test_statistic = five_by_two_cv(OLS_MAE, PSO_MAE)
-    # print(OLS_MAE)
-    # print(f"5by2 statistic: {test_statistic}")
-    # print(f"MAE differences: {MAE_diff}")
-    # print(f"RMSE differences: {RMSE_diff}")
-    # print(f"OLS MAE Average {np.mean(OLS_MAE)}")
-    # print(f"OLS MAE Confidence interval ({np.mean(OLS_MAE) - t_statistic * sample_std(OLS_MAE)/(NO_FOLDS -1)} , {np.mean(OLS_MAE) + t_statistic * sample_std(OLS_MAE)/(NO_FOLDS -1)}")
-    # print(f"PSO MAE Average {np.mean(PSO_MAE)}")
-    # print(f"PSO MAE Confidence interval ({np.mean(PSO_MAE) - t_statistic * sample_std(PSO_MAE)/(NO_FOLDS -1)} , {np.mean(PSO_MAE) + t_statistic * sample_std(PSO_MAE)/(NO_FOLDS -1)}")
-    # print(f"OLS - PSO: MAE Average {np.mean(MAE_diff)}")
-    # print(f"OLD - PSO: MAE Confidence interval ({np.mean(MAE_diff) - t_statistic * sample_std(MAE_diff)/(NO_FOLDS -1)} , {np.mean(MAE_diff) + t_statistic * sample_std(MAE_diff)/(NO_FOLDS -1)}")
-    # print(f"OLS - PSO: RMSE Average {np.mean(RMSE_diff)}")
-    # print(f"OLD - PSO: RMSE Confidence interval ({np.mean(RMSE_diff) - t_statistic * sample_std(RMSE_diff)/(NO_FOLDS -1)} , {np.mean(RMSE_diff) + t_statistic * sample_std(RMSE_diff)/(NO_FOLDS -1)}")
-
-    #print(f"OLS RMSE Average {np.mean(OLS_RMSE)}")
-    #print(f"PSO RMSE Average {np.mean(PSO_RMSE)}")            
+           
 
 
         
