@@ -11,30 +11,31 @@ def Rmse(predicted, actual):
     sum_of_squares = np.sum(np.square(predicted - actual))
     return np.sqrt(sum_of_squares)
 
-def Mae(predicted, actual):
+def Mae(predictions, actual):
     """
     Calculate Mean Absolute Error
 
     Arguments:
-    predicted: 1D numpy array
-    actual: 1D numpy array
-    """
-    absolute_errors = np.abs(predicted - actual)
-    return np.mean(absolute_errors)
-
-def Mae_pso(predictions, actual):
-    """
-    Calculate Mean Absolute Error
-
-    Arguments:
-        predictions: predictions numpy array of size (no_examples, no_particles)
+        predictions: predictions numpy array of size (no_examples, no_solutions)
         actuals: 1D numpy array of size (no_examples, 1)
 
     Returns:
-        mae: mae for each particle - numpy array of size (1, no_particles)
+        mae: mae for each particle - numpy array of size (1, no_solutions)
+    
+    Approach:
+    predictions can be a 1d array which corresponds to one set of model predictions OR
+    if can be a matrix of predictions, where each column represents a set of predictions
+    for a specific model (which is usefule for particle swarm optimisation)
     """
     assert(predictions.shape[0] == actual.shape[0])
+    if len(predictions.shape) == 1:
+        predictions = predictions.reshape(-1, 1)
+    if len(actual.shape) == 1:
+        actual = actual.reshape(-1, 1)
+
     absolute_errors = np.abs(predictions - actual)
+    assert(absolute_errors.shape == predictions.shape)
+
     return np.mean(absolute_errors, axis = 0, keepdims = True)
 
 def Cautious(predictions, actual, multiplier = 10):
