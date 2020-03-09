@@ -1,5 +1,5 @@
 from twlearn import LinearRegression
-from twlearn.metrics import Mae_pso, Rmse, Mae
+from twlearn.metrics import Mae_pso, Rmse, Mae, Cautious
 import numpy as np
 from sklearn.datasets import load_boston
 import sklearn.model_selection
@@ -7,7 +7,7 @@ import sklearn.model_selection
 NO_FOLDS = 2
 NO_REPEATS = 5
 
-np.random.seed(2020)
+np.random.seed(1)
 
 def evaluate(model, X_test, Y_test, loss):
     """ Take a model and and some test data and produce test metrics
@@ -54,11 +54,11 @@ if __name__ == '__main__':
 
             # train models
             ols_model.fit(X_train, Y_train, optimiser = 'OLS')
-            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Mae_pso, num_iterations = 2000, no_particles = 500)
+            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Cautious, num_iterations = 2000, no_particles = 500)
 
             # evaluate models
-            OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Mae)
-            PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Mae)
+            OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Cautious)
+            PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Cautious)
 
     def five_by_two_cv(errorA, errorB):
         """ compute the 5x2cv paired t test
@@ -96,7 +96,6 @@ if __name__ == '__main__':
             sum_of_squares += variances[repeat]
 
         t_statistic = differences[0][0] / np.sqrt((1 / NO_REPEATS) * sum_of_squares)
-
 
         return t_statistic, average_differences
 

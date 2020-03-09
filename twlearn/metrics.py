@@ -65,7 +65,7 @@ def Cautious(predictions, actual):
 
     # cautious adjustment
     adjustment = np.ones(shape = errors.shape)
-    adjustment[extra_weight_index] = 5
+    adjustment[extra_weight_index] = 20
 
     # squared error with adjustment
     cautious_squared_error = np.multiply(np.square(errors), adjustment)
