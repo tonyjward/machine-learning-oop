@@ -1,15 +1,39 @@
 import numpy as np
 
-def Rmse(predicted, actual):
+def Rmse(predictions, actual):
     """
-    Calculate root mean square error
+   Calculate Root mean square error
 
     Arguments:
-    predicted: 1D numpy array
-    actual: 1D numpy array
+        predictions: predictions numpy array of size (no_examples, no_solutions)
+        actuals: 1D numpy array of size (no_examples, 1)
+
+    Returns:
+        rmse: rmse for each solution - numpy array of size (1, no_solutions)
+    
+    Approach:
+    predictions can be a 1d array which corresponds to one set of model predictions OR
+    if can be a matrix of predictions, where each column represents a set of predictions
+    for a specific model (which is usefule for particle swarm optimisation)
     """
-    sum_of_squares = np.sum(np.square(predicted - actual))
-    return np.sqrt(sum_of_squares)
+    assert(predictions.shape[0] == actual.shape[0])
+    if len(predictions.shape) == 1:
+        predictions = predictions.reshape(-1, 1)
+    if len(actual.shape) == 1:
+        actual = actual.reshape(-1, 1)
+   
+    no_examples, no_solutions = predictions.shape
+
+    squared_error = np.square(predictions - actual)
+    assert(squared_error.shape == predictions.shape)
+
+    sum_of_squares = np.sum(squared_error, axis = 0, keepdims = True)
+    assert(sum_of_squares.shape == (1, no_solutions))
+    
+    rmse = np.sqrt(sum_of_squares)
+    assert(rmse.shape == (1, no_solutions))
+
+    return rmse
 
 def Mae(predictions, actual):
     """
@@ -20,7 +44,7 @@ def Mae(predictions, actual):
         actuals: 1D numpy array of size (no_examples, 1)
 
     Returns:
-        mae: mae for each particle - numpy array of size (1, no_solutions)
+        mae: mae for each solution - numpy array of size (1, no_solutions)
     
     Approach:
     predictions can be a 1d array which corresponds to one set of model predictions OR
