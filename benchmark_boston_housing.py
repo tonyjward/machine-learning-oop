@@ -1,5 +1,5 @@
 from twlearn import LinearRegression
-from twlearn.metrics import Mae_pso, Rmse, Mae, Cautious, five_by_two_cv
+from twlearn.metrics import Rmse, Mae, Cautious, five_by_two_cv
 import numpy as np
 from sklearn.datasets import load_boston
 import sklearn.model_selection
@@ -54,11 +54,11 @@ if __name__ == '__main__':
 
             # train models
             ols_model.fit(X_train, Y_train, optimiser = 'OLS')
-            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Mae_pso, num_iterations = 200, no_particles = 50)
+            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Mae, num_iterations = 2000, no_particles = 500)
 
             # evaluate models
-            OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Mae_pso)
-            PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Mae_pso)
+            OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Mae)
+            PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Mae)
 
     print(f" t_statistic {five_by_two_cv(OLS_MAE, PSO_MAE)}")
     
