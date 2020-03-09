@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 from twlearn import LinearRegression, generate_dataset
-from twlearn.metrics import Rmse, Mae, Mae_pso, five_by_two_cv
+from twlearn.metrics import Rmse, Mae, five_by_two_cv
 
 class Test_Linear_Regression_OLS_1D_Class(unittest.TestCase):
     
@@ -66,7 +66,7 @@ class Test_LinearRegression_ParticleSwarm_MAE_1D_Class(unittest.TestCase):
     def setUp(self):
         X, y = np.array([[-1.], [0.], [1.]]), np.array([[0.],[1.],[2.]])
         self.lm = LinearRegression()
-        self.lm.fit(X, y, optimiser = 'PSO', loss = Mae_pso, upper = 4, lower = -4)
+        self.lm.fit(X, y, optimiser = 'PSO', loss = Mae, upper = 4, lower = -4)
 
     def test_fit_1D_with_intercept(self):
         desired_intercept, desired_coefficients = np.array([1.]), np.array([[1.]])    
