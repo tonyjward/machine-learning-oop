@@ -1,5 +1,5 @@
 from twlearn import LinearRegression
-from twlearn.metrics import Mae_pso, Rmse, Mae, Cautious
+from twlearn.metrics import Mae_pso, Rmse, Mae, Cautious, five_by_two_cv
 import numpy as np
 from sklearn.datasets import load_boston
 import sklearn.model_selection
@@ -54,56 +54,13 @@ if __name__ == '__main__':
 
             # train models
             ols_model.fit(X_train, Y_train, optimiser = 'OLS')
-            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Cautious, num_iterations = 2000, no_particles = 500)
+            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Cautious, num_iterations = 200, no_particles = 50)
 
             # evaluate models
             OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Cautious)
             PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Cautious)
 
-    def five_by_two_cv(errorA, errorB):
-        """ compute the 5x2cv paired t test
-        Arguments:
-             
-            errorA: dictionary - results of 5 repeats of 2 fold cross validation for model A   
-            errorB: dictionary - results of 5 repeats of 2 fold cross validation for model B
-                   
-        Returns:
-            the 5x2cv paired t test as described in https://sci2s.ugr.es/keel/pdf/algorithm/articulo/dietterich1998.pdf 
-        Approach:
-            Arguments errorA and error B contain the results of 5 repeats of two fold cross validation
-            for algorithm A and B respectively.
-        """
-        differences = {}
-
-        # differences between models
-        for repeat in range(NO_REPEATS):
-            differences[repeat] = {}
-            for fold in range(NO_FOLDS):
-                differences[repeat][fold] = errorA[repeat][fold] - errorB[repeat][fold]
-
-        # average differences
-        average_differences = {}
-        for repeat in range(NO_REPEATS):
-            average_differences[repeat] = (differences[repeat][0] + differences[repeat][0]) / 2
-
-        # variances
-        variances = {}
-        for repeat in range(NO_REPEATS):
-            variances[repeat] = (differences[repeat][0] - average_differences[repeat]) ** 2 + (differences[repeat][1] - average_differences[repeat]) ** 2
-       
-        sum_of_squares = 0
-        for repeat in range(NO_REPEATS):
-            sum_of_squares += variances[repeat]
-
-        t_statistic = differences[0][0] / np.sqrt((1 / NO_REPEATS) * sum_of_squares)
-
-        return t_statistic, average_differences
-
-
-
-
-
-    
+        
     
     print(f" t_statistic {five_by_two_cv(OLS_MAE, PSO_MAE)}")
     
