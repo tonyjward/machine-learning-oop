@@ -157,7 +157,8 @@ class Pso:
         swarm_predictions = self._predict_pso(X, swarm_position)
         assert(swarm_predictions.shape == (no_examples, no_particles))
 
-        swarm_errors = loss(swarm_predictions, y)
+        swarm_errors = loss(predictions = swarm_predictions, 
+                            actual = y)
         assert(swarm_errors.shape == (1, no_particles))        
         
         # Intialise best historical position and errors
@@ -196,7 +197,8 @@ class Pso:
             swarm_predictions = self._predict_pso(X, swarm_position)
             assert(swarm_predictions.shape == (no_examples, no_particles))
 
-            swarm_errors = loss(swarm_predictions, y)
+            swarm_errors = loss(predictions = swarm_predictions, 
+                                actual = y)
             assert(swarm_errors.shape == (1, no_particles))   
 
             # Update historical best and historical error for each particle if new position better   

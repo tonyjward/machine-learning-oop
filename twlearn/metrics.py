@@ -37,13 +37,14 @@ def Mae_pso(predictions, actual):
     absolute_errors = np.abs(predictions - actual)
     return np.mean(absolute_errors, axis = 0, keepdims = True)
 
-def Cautious(predictions, actual):
+def Cautious(predictions, actual, multiplier = 10):
     """
     Calculate Mean Absolute Error
 
     Arguments:
         predictions: predictions numpy array of size (no_examples, no_particles)
         actuals: 1D numpy array of size (no_examples, 1)
+        multiplier: int - how much weight to give underpredictions for positive actual values
 
     Returns:
         mae: mae for each particle - numpy array of size (1, no_particles)
@@ -65,7 +66,7 @@ def Cautious(predictions, actual):
 
     # cautious adjustment
     adjustment = np.ones(shape = errors.shape)
-    adjustment[extra_weight_index] = 20
+    adjustment[extra_weight_index] = multiplier
 
     # squared error with adjustment
     cautious_squared_error = np.multiply(np.square(errors), adjustment)
@@ -116,9 +117,6 @@ def five_by_two_cv(errorA, errorB, no_repeats = 5, no_folds = 2):
         sum_of_squares = 0
         for repeat in range(no_repeats):
             sum_of_squares += variances[repeat]
-
-        print(f"average_differences: {average_differences}")
-
 
         t_statistic = differences[0][0] / np.sqrt((1 / no_repeats) * sum_of_squares)
 

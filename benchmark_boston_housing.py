@@ -54,14 +54,12 @@ if __name__ == '__main__':
 
             # train models
             ols_model.fit(X_train, Y_train, optimiser = 'OLS')
-            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Cautious, num_iterations = 200, no_particles = 50)
+            pso_model.fit(X_train, Y_train, optimiser = 'PSO', loss = Cautious, num_iterations = 2000, no_particles = 500)
 
             # evaluate models
             OLS_MAE[repeat][fold] = evaluate(ols_model, X_test, Y_test, Cautious)
             PSO_MAE[repeat][fold] = evaluate(pso_model, X_test, Y_test, Cautious)
 
-        
-    
     print(f" t_statistic {five_by_two_cv(OLS_MAE, PSO_MAE)}")
     
     
