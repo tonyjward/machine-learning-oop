@@ -1,5 +1,6 @@
 from twlearn import LinearRegression
-from twlearn.metrics import Rmse, Mae, Cautious, five_by_two_cv
+from twlearn.metrics import Rmse, Mae, Cautious
+from twlearn.statistics import five_by_two_cv
 import numpy as np
 from sklearn.datasets import load_boston
 import sklearn.model_selection

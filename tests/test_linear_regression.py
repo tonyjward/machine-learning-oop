@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from twlearn import LinearRegression, generate_dataset
+from twlearn import LinearRegression
 from twlearn.metrics import Rmse, Mae
 
 class Test_Linear_Regression_OLS_1D_Class(unittest.TestCase):
