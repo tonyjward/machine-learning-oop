@@ -4,7 +4,7 @@ There are two goals of this project
 2) To improve Machine Learning skills by implementing algorithms from scratch
 
 We start with the simplest of the machine learning algorithms - Linear Regression. Three optimisers have been coded up
-1) [Ordinary Least Squares] (https://github.com/tonyjward/machine-learning-oop/blob/master/twlearn/LinearRegression.py)
+1) [Ordinary Least Squares](https://github.com/tonyjward/machine-learning-oop/blob/master/twlearn/LinearRegression.py)
 2) [Gradient Descent](https://github.com/tonyjward/machine-learning-oop/blob/master/twlearn/GradientDescent.py)
 3) [Particle Swarm](https://github.com/tonyjward/machine-learning-oop/blob/master/twlearn/ParticleSwarm.py)
 
