@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 
 def five_by_two_cv(errorA, errorB, no_repeats = 5, no_folds = 2):
         """ compute the 5x2cv paired t test
@@ -48,3 +49,27 @@ def five_by_two_cv(errorA, errorB, no_repeats = 5, no_folds = 2):
         t_statistic = differences[0][0] / np.sqrt((1 / no_repeats) * sum_of_squares)
 
         return t_statistic, average_differences
+
+def p_value(t_statistic, degrees_freedom, sided):
+    """
+    Arguments:
+        t_statistic -- float -- students test statistic
+        degrees_freedom -- int - degrees of freedom for test statistic
+        sided -- int (1 or 2) - how many sides should the test have
+
+    Returns:
+        p_value -- float -- p - value associated with the test
+
+    """
+    assert sided in (1,2), 'sided must be 1 or 2'
+
+    p_one_sided = 1 - stats.t.cdf(t_statistic, df=degrees_freedom)
+    p_two_sided = 2 * p_one_sided
+
+    if sided == 1:
+        return p_one_sided
+    elif sided == 2:
+        return p_two_sided
+
+
+
