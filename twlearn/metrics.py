@@ -62,7 +62,7 @@ def Mae(predictions, actual):
 
     return np.mean(absolute_errors, axis = 0, keepdims = True)
 
-def Cautious(predictions, actual, multiplier = 100):
+def fourth_quadrant(predictions, actual, multiplier = 200):
     """
     Calculate Mean Absolute Error
 
@@ -81,11 +81,11 @@ def Cautious(predictions, actual, multiplier = 100):
     if len(actual.shape) == 1:
         actual = actual.reshape(-1, 1)
      
-    errors = predictions - actual
+    errors = actual - predictions
     assert(errors.shape == predictions.shape)
  
     negative_error_index = errors < 0
-    positive_actual_index = actual > 0
+    positive_actual_index = actual > np.mean(actual)
 
     extra_weight_index = np.logical_and(negative_error_index, positive_actual_index)
 
@@ -94,8 +94,8 @@ def Cautious(predictions, actual, multiplier = 100):
     adjustment[extra_weight_index] = multiplier
 
     # squared error with adjustment
-    cautious_squared_error = np.multiply(np.square(errors), adjustment)
+    adjusted_squared_error = np.multiply(np.square(errors), adjustment)
 
-    return np.mean(cautious_squared_error, axis = 0, keepdims = True)
+    return np.mean(adjusted_squared_error, axis = 0, keepdims = True)
 
 
