@@ -25,15 +25,15 @@ class Pso:
         """ Initialise the velocity of the particles
         
         Arguments:
-            velocity --
-            historical_best --
-            best_particle --
-            swarm_position --
-            intertia --,
-            nostalgia --
-            envy --
-            no_features --
-            no_particles --
+            velocity            -- numpy matrix of size (no_features, no_particles)
+            historical_best     -- numpy matrix of size (no_features, no_particles)
+            best_particle       -- numpy matrix of size (no_features, 1)
+            swarm_position      -- numpy matrix of size (no_features, no_particles)
+            intertia --float    -- weight applied to velocity of particles when calculating new velocity,
+            nostalgia -- float  -- weight applied to individual particles previous best when calculating velocity
+            envy -- float       -- weight applied to swarm best when calculating velocity
+            no_features         -- int, number of features
+            no_particles        -- int, number of particles
 
         Returns:
             velocity - updated particle velocity numpy array of size (no_features, no_particles)
